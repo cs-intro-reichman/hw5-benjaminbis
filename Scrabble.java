@@ -32,6 +32,12 @@ public class Scrabble {
             char letter = word.charAt(i);
             score += SCRABBLE_LETTER_VALUES[letter - 'a'];
         }
+        if (word.length() == HAND_SIZE) {
+            score += 50;
+        }
+        if (word.contains("runi")) {
+            score += 1000;
+        }
         return score;
     }
 
@@ -41,7 +47,7 @@ public class Scrabble {
         for (int i = 0; i < HAND_SIZE - 2; i++) {
             hand.append(letters.charAt((int) (Math.random() * letters.length())));
         }
-        hand.append("ae"); 
+        hand.append("ae");
         return hand.toString();
     }
 
@@ -55,7 +61,7 @@ public class Scrabble {
             if (input.equals(".")) {
                 break;
             }
-            if (isWordInDictionary(input)) {
+            if (isWordInDictionary(input) && isSubsetOf(input, hand)) {
                 int wordScore = wordScore(input);
                 score += wordScore;
                 System.out.println("Word score: " + wordScore + " Total score: " + score);
@@ -77,6 +83,19 @@ public class Scrabble {
             }
         }
         return updatedHand.toString();
+    }
+
+    public static boolean isSubsetOf(String word, String hand) {
+        StringBuilder handCopy = new StringBuilder(hand);
+        for (int i = 0; i < word.length(); i++) {
+            char letter = word.charAt(i);
+            int index = handCopy.indexOf(String.valueOf(letter));
+            if (index == -1) {
+                return false;
+            }
+            handCopy.deleteCharAt(index);
+        }
+        return true;
     }
 
     public static String formatHand(String hand) {
