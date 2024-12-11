@@ -23,11 +23,11 @@ public class Scrabble {
     }
 
     public static int wordScore(String word) {
-        int score = 0;
         int[] SCRABBLE_LETTER_VALUES = {
             1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3,
             1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10
         };
+        int score = 0;
         for (int i = 0; i < word.length(); i++) {
             char letter = word.charAt(i);
             score += SCRABBLE_LETTER_VALUES[letter - 'a'];
@@ -37,19 +37,19 @@ public class Scrabble {
 
     public static String createHand() {
         String letters = "abcdefghijklmnopqrstuvwxyz";
-        String hand = "";
+        StringBuilder hand = new StringBuilder();
         for (int i = 0; i < HAND_SIZE - 2; i++) {
-            hand += letters.charAt((int) (Math.random() * letters.length()));
+            hand.append(letters.charAt((int) (Math.random() * letters.length())));
         }
-        hand += "ae";
-        return hand;
+        hand.append("ae"); 
+        return hand.toString();
     }
 
     public static void playHand(String hand) {
         int score = 0;
         In in = new In();
         while (hand.length() > 0) {
-            System.out.println("Current Hand: " + hand);
+            System.out.println("Current Hand: " + formatHand(hand));
             System.out.println("Enter a word, or '.' to finish playing this hand:");
             String input = in.readString();
             if (input.equals(".")) {
@@ -68,11 +68,23 @@ public class Scrabble {
     }
 
     public static String removeLetters(String hand, String word) {
+        StringBuilder updatedHand = new StringBuilder(hand);
         for (int i = 0; i < word.length(); i++) {
             char letter = word.charAt(i);
-            hand = hand.replaceFirst(String.valueOf(letter), "");
+            int index = updatedHand.indexOf(String.valueOf(letter));
+            if (index != -1) {
+                updatedHand.deleteCharAt(index);
+            }
         }
-        return hand;
+        return updatedHand.toString();
+    }
+
+    public static String formatHand(String hand) {
+        StringBuilder formattedHand = new StringBuilder();
+        for (int i = 0; i < hand.length(); i++) {
+            formattedHand.append(hand.charAt(i)).append(" ");
+        }
+        return formattedHand.toString().trim();
     }
 
     public static void playGame() {
@@ -82,6 +94,7 @@ public class Scrabble {
             System.out.println("Enter 'n' to deal a new hand, or 'e' to end the game:");
             String input = in.readString();
             if (input.equals("e")) {
+                System.out.println("Thanks for playing!");
                 break;
             } else if (input.equals("n")) {
                 String hand = createHand();
