@@ -30,21 +30,22 @@ public class Scrabble {
         return false;
     }
 
-    public static int wordScore(String word) {
-        int score = 0;
-        for (int i = 0; i < word.length(); i++) {
-            char letter = word.charAt(i);
-            score += SCRABBLE_LETTER_VALUES[letter - 'a'];
-        }
-        if (word.length() == HAND_SIZE) {
-            score += 50;
-        }
-        if (word.contains("runi")) {
-            score += 1000;
-        }
-        return score;
-    }
+    ublic static int WordScore(String word, int n)
+	{
+		int score = 0;
 
+		for ( int i = 0 ; i < word.length() ; i++ )
+		{
+			char c = word.charAt(i);
+			score = score + SCRABBLE_LETTER_VALUES[c - 'a']; 
+		}
+
+		score = score * word.length(); 
+
+		if ( word.length() == n ) score = score + 50; 
+		return score;
+
+	}
     public static String createHand() {
         String letters = "abcdefghijklmnopqrstuvwxyz";
         StringBuilder hand = new StringBuilder();
