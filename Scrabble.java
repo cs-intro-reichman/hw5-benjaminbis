@@ -59,7 +59,7 @@ public class Scrabble {
         int score = 0;
         In in = new In();
         while (hand.length() > 0) {
-            System.out.println("Current Hand: " + hand);
+            System.out.println("Current Hand: " + formatHand(hand));
             System.out.println("Enter a word, or '.' to finish playing this hand:");
             String input = in.readString();
             if (input.equals(".")) {
@@ -100,6 +100,14 @@ public class Scrabble {
             handCopy.deleteCharAt(index);
         }
         return true;
+    }
+
+    public static String formatHand(String hand) {
+        StringBuilder formattedHand = new StringBuilder();
+        for (int i = 0; i < hand.length(); i++) {
+            formattedHand.append(hand.charAt(i)).append(" ");
+        }
+        return formattedHand.toString().trim();
     }
 
     public static void playGame() {
