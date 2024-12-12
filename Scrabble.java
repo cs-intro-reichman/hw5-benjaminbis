@@ -31,19 +31,24 @@ public class Scrabble {
     }
 
     public static int wordScore(String word) {
-        int score = 0;
-        for (int i = 0; i < word.length(); i++) {
-            char letter = word.charAt(i);
-            score += SCRABBLE_LETTER_VALUES[letter - 'a'];
-        }
-        if (word.length() == HAND_SIZE) {
-            score += 50;
-        }
-        if (word.contains("runi")) {
-            score += 1000;
-        }
-        return score;
+    int score = 0;
+    for (int i = 0; i < word.length(); i++) {
+        char letter = word.charAt(i);
+        score += SCRABBLE_LETTER_VALUES[letter - 'a'];
     }
+    // Multiplie par la longueur du mot
+    score *= word.length();
+
+    // Bonus pour utiliser toutes les lettres du hand
+    if (word.length() == HAND_SIZE) {
+        score += 50;
+    }
+    // Bonus si le mot contient "runi"
+    if (word.contains("runi")) {
+        score += 1000;
+    }
+    return score;
+}
 
     public static String createHand() {
         String letters = "abcdefghijklmnopqrstuvwxyz";
