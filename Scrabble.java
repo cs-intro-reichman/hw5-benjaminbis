@@ -22,57 +22,9 @@ public class Scrabble {
         System.out.println(NUM_OF_WORDS + " words loaded.");
     }
 
-    public static boolean isInHand(String input, String hand) {
-        boolean found = false;
-        for (char str1Letter : input.toCharArray()) {
-            for (int i = 0; i < hand.length(); i++) {
-                if (str1Letter == hand.charAt(i)) {
-                    found = true;
-                    hand = hand.substring(0, i) + hand.substring(i + 1);
-                    i = hand.length();
-                }
-            }
-            if (!found) {
-                return false;
-            }
-            found = false;
-        }
-        return true;
-    }
-
-    public static String remove(String str1, String str2) {
-        for (char letter : str2.toCharArray()) {
-            for (int i = 0; i < str1.length(); i++) {
-                if (letter == str1.charAt(i)) {
-                    str1 = str1.substring(0, i) + str1.substring(i + 1);
-                    i = str1.length();
-                }
-            }
-        }
-        return str1;
-    }
-
-    public static boolean subsetOf(String str1, String str2) {
-        boolean found = false;
-        for (char str1Letter : str1.toCharArray()) {
-            for (int i = 0; i < str2.length(); i++) {
-                if (str1Letter == str2.charAt(i)) {
-                    found = true;
-                    str2 = str2.substring(0, i) + str2.substring(i + 1);
-                    i = str2.length();
-                }
-            }
-            if (!found) {
-                return false;
-            }
-            found = false;
-        }
-        return true;
-    }
-
     public static boolean isWordInDictionary(String word) {
-        for (String wordInDic : DICTIONARY) {
-            if (wordInDic != null && wordInDic.equals(word)) {
+        for (int i = 0; i < DICTIONARY.length; i++) {
+            if (word.equals(DICTIONARY[i])) {
                 return true;
             }
         }
@@ -80,58 +32,72 @@ public class Scrabble {
     }
 
     public static int wordScore(String word) {
-        word = word.toLowerCase();
-        int score = 0;
-        for (char letter : word.toCharArray()) {
-            score += SCRABBLE_LETTER_VALUES[(int) letter - 'a'];
+        int sum = 0;
+        char c;
+        for (int i = 0; i < word.length(); i++) {
+            c = word.charAt(i);
+            sum += SCRABBLE_LETTER_VALUES[(int) word.charAt(i) - 97];
         }
-        score *= word.length();
-        if (word.length() == HAND_SIZE) {
-            score += 50;
+        sum *= word.length();
+        sum += (word.length() == HAND_SIZE ? 50 : 0);
+        sum += (MyString.subsetOf("runi", word) ? 1000 : 0);
+        return sum;
+    }
+
+    public static String frequencyOfCharBasedRandomStringOfLetters(int size) {
+        int[] frequencyArr = new int[26];
+        int currCharFrequencySum;
+        for (int i = 97; i <= 122; i++) {
+            currCharFrequencySum = 0;
+            for (int j = 0; j < DICTIONARY.length; j++) {
+                currCharFrequencySum += (MyString.countChar(DICTIONARY[j], ((char) i)));
+            }
+            frequencyArr[i - 97] = currCharFrequencySum;
         }
-        if (subsetOf("runi", word)) {
-            score += 1000;
+        int[] cumalativeWeightsOfChars = new int[26];
+        cumalativeWeightsOfChars[0] = frequencyArr[0];
+        for (int i = 1; i < 26; i++) {
+            cumalativeWeightsOfChars[i] = cumalativeWeightsOfChars[i - 1] + frequencyArr[i];
         }
-        return score;
+        int totalSum = cumalativeWeightsOfChars[25];
+        String randomStringBasedOnFrequency = "";
+        for (int i = 0; i < size; i++) {
+            int randNum = (int) (Math.random() * totalSum);
+            for (int j = 0; j < 25; j++) {
+                if (randNum <= cumalativeWeightsOfChars[j]) {
+                    randomStringBasedOnFrequency = randomStringBasedOnFrequency + ((char) (j + 97));
+                    break;
+                }
+            }
+        }
+        return randomStringBasedOnFrequency;
     }
 
     public static String createHand() {
-        char[] hand = new char[HAND_SIZE];
-        int randomIndexOfA = (int) (Math.random() * HAND_SIZE);
-        int randomIndexOfE = (int) (Math.random() * HAND_SIZE);
-        hand[randomIndexOfA] = 'a';
-        while (randomIndexOfA == randomIndexOfE) {
-            randomIndexOfE = (int) (Math.random() * HAND_SIZE);
-        }
-        hand[randomIndexOfE] = 'e';
-        for (int i = 0; i < HAND_SIZE; i++) {
-            if (i != randomIndexOfA && i != randomIndexOfE) {
-                hand[i] = (char) ((int) (Math.random() * 26) + 'a');
-            }
-        }
-        String retStr = "";
-        for (char letter : hand) {
-            retStr += letter;
-        }
-        return retStr;
+        String newHand = frequencyOfCharBasedRandomStringOfLetters(HAND_SIZE - 2);
+        newHand = MyString.insertCharRandomly('a', newHand);
+        newHand = MyString.insertCharRandomly('e', newHand);
+        return newHand;
     }
 
     public static void playHand(String hand) {
-        int n = hand.length();
         int score = 0;
         In in = new In();
         while (hand.length() > 0) {
             System.out.println("Current Hand: " + MyString.spacedString(hand));
             System.out.println("Enter a word, or '.' to finish playing this hand:");
             String input = in.readString();
-            if (input.equals(".")) {
+            if (input.length() == 1 && input.charAt(0) == '.') {
                 break;
             }
-            if (isWordInDictionary(input) && isInHand(input, hand)) {
-                int inputScore = wordScore(input);
-                score += inputScore;
-                hand = remove(hand, input);
-                System.out.println(input + " earned " + inputScore + " points. Score: " + score + " points");
+            if (MyString.subsetOf(input, hand)) {
+                if (isWordInDictionary(input)) {
+                    score += wordScore(input);
+                    hand = MyString.remove(hand, input);
+                    System.out.println(input + " earned " + wordScore(input) + " points. Score: " + score + " points");
+                } else {
+                    System.out.println("No such word in the dictionary. Try again.");
+                }
             } else {
                 System.out.println("Invalid word. Try again.");
             }
@@ -149,13 +115,12 @@ public class Scrabble {
         while (true) {
             System.out.println("Enter n to deal a new hand, or e to end the game:");
             String input = in.readString();
-            if (input.equals("e")) {
+            if (input.length() == 1 && input.charAt(0) == 'n') {
+                playHand(createHand());
+            } else if (input.length() == 1 && input.charAt(0) == 'e') {
                 break;
-            } else if (input.equals("n")) {
-                String hand = createHand();
-                playHand(hand);
             } else {
-                System.out.println(input + " is not a valid input.");
+                System.out.println("Invalid input. Please try again.");
             }
         }
     }
@@ -191,4 +156,4 @@ public class Scrabble {
         playHand("arbffip");
         playHand("aretiin");
     }
-} fait moi des petits changement 
+}
