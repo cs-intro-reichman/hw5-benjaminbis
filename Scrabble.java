@@ -1,6 +1,3 @@
-/*
- * RUNI version of the Scrabble game.
- */
 public class Scrabble {
 
     static final String WORDS_FILE = "dictionary.txt";
@@ -29,7 +26,8 @@ public class Scrabble {
         }
         return false;
     }
- public static int wordScore(String word) {
+
+    public static int wordScore(String word) {
         int score = 0;
         for (int i = 0; i < word.length(); i++) {
             char letter = word.charAt(i);
@@ -44,28 +42,21 @@ public class Scrabble {
         return score;
     }
 
-
     public static String createHand() {
-    String letters = "abcdefghijklmnopqrstuvwxyz";
-    StringBuilder hand = new StringBuilder();
-
- 
-    for (int i = 0; i < HAND_SIZE - 2; i++) {
-        hand.append(letters.charAt((int) (Math.random() * letters.length())));
+        String letters = "abcdefghijklmnopqrstuvwxyz";
+        StringBuilder hand = new StringBuilder();
+        for (int i = 0; i < HAND_SIZE - 2; i++) {
+            hand.append(letters.charAt((int) (Math.random() * letters.length())));
+        }
+        hand.append("ae");
+        return hand.toString();
     }
-
-
-    hand.append("a");
-    hand.append("e");
-
-    return hand.toString();
-}
 
     public static void playHand(String hand) {
         int score = 0;
         In in = new In();
         while (hand.length() > 0) {
-            System.out.println("Current Hand: " + formatHand(hand));
+            System.out.println("Current Hand: " + hand);
             System.out.println("Enter a word, or '.' to finish playing this hand:");
             String input = in.readString();
             if (input.equals(".")) {
@@ -106,14 +97,6 @@ public class Scrabble {
             handCopy.deleteCharAt(index);
         }
         return true;
-    }
-
-    public static String formatHand(String hand) {
-        StringBuilder formattedHand = new StringBuilder();
-        for (int i = 0; i < hand.length(); i++) {
-            formattedHand.append(hand.charAt(i)).append(" ");
-        }
-        return formattedHand.toString().trim();
     }
 
     public static void playGame() {
