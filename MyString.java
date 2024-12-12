@@ -8,23 +8,25 @@ public class MyString {
     }
 
     public static int countChar(String inputStr, char targetChar) {
-        int occurrenceCount = 0;
-        if (!(inputStr instanceof String) || (inputStr.length() == 0)) {
+        int count = 0;
+        if (inputStr == null || inputStr.isEmpty()) {
             return 0;
         }
         for (int i = 0; i < inputStr.length(); i++) {
             if (inputStr.charAt(i) == targetChar) {
-                occurrenceCount++;
+                count++;
             }
         }
-        return occurrenceCount;
+        return count;
     }
 
     public static boolean subsetOf(String smallStr, String largeStr) {
         if (smallStr.length() > largeStr.length()) {
             return false;
         }
-        if (smallStr.isEmpty()) return true;
+        if (smallStr.isEmpty()) {
+            return true;
+        }
         for (int i = 0; i < smallStr.length(); i++) {
             char currentChar = smallStr.charAt(i);
             if (!largeStr.contains(Character.toString(currentChar))) {
@@ -36,39 +38,35 @@ public class MyString {
     }
 
     public static String spacedString(String inputStr) {
-        String spacedStr = "";
+        StringBuilder spacedStr = new StringBuilder();
         for (int i = 0; i < inputStr.length(); i++) {
-            spacedStr += inputStr.charAt(i);
+            spacedStr.append(inputStr.charAt(i));
             if (i < inputStr.length() - 1) {
-                spacedStr += " ";
+                spacedStr.append(" ");
             }
         }
-        return spacedStr;
+        return spacedStr.toString();
     }
 
     public static String randomStringOfLetters(int length) {
-        String randomLetters = "";
+        StringBuilder randomLetters = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            int randomCharCode = (int) (Math.random() * (122 - 97 + 1)) + 97;
-            char randomLetter = (char) randomCharCode;
-            randomLetters += randomLetter;
+            char randomLetter = (char) ('a' + (Math.random() * 26));
+            randomLetters.append(randomLetter);
         }
-        return randomLetters;
+        return randomLetters.toString();
     }
 
     public static String remove(String inputStr1, String inputStr2) {
         for (int i = 0; i < inputStr2.length(); i++) {
             char currentChar = inputStr2.charAt(i);
-            if (inputStr1.contains(Character.toString(currentChar))) {
-                inputStr1 = inputStr1.replaceFirst(Character.toString(currentChar), "");
-            }
+            inputStr1 = inputStr1.replaceFirst(Character.toString(currentChar), "");
         }
         return inputStr1;
     }
 
     public static String insertCharRandomly(char randomChar, String inputStr) {
         int randomIndex = (int) (Math.random() * (inputStr.length() + 1));
-        String resultStr = inputStr.substring(0, randomIndex) + randomChar + inputStr.substring(randomIndex);
-        return resultStr;
+        return inputStr.substring(0, randomIndex) + randomChar + inputStr.substring(randomIndex);
     }
 }
